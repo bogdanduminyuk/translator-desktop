@@ -1,7 +1,7 @@
 import abc
 
 
-class InputDataReader(metaclass=abc.ABC):
+class InputDataReader(abc.ABC):
     """ Interface for analyzing of input data. """
     @abc.abstractmethod
     def read(self, data):
@@ -10,7 +10,7 @@ class InputDataReader(metaclass=abc.ABC):
         """
 
 
-class ResultDataWriter(metaclass=abc.ABC):
+class ResultDataWriter(abc.ABC):
     """ Interface for writing data to something. """
     @abc.abstractmethod
     def write(self, data):
@@ -19,7 +19,7 @@ class ResultDataWriter(metaclass=abc.ABC):
         """
 
 
-class DataSaver(metaclass=abc.ABC):
+class DataSaver(abc.ABC):
     """ Interface for saving data to something like cache, database, etc. """
     @abc.abstractmethod
     def save(self, data):
