@@ -18,5 +18,6 @@ headers = {
  AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
 }
 
-selector = ".t_inline_en"
+one_word_selector = ".t_inline_en"
+collocation_selector = ".block.phrases i"
 request_timeout = 5
