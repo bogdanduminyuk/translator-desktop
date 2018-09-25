@@ -2,17 +2,18 @@ import time
 import requests
 from bs4 import BeautifulSoup as bs
 from core import settings
-from core.input_data_readers import OneLineReader
+from core.input_data_readers import TxtFileReader
 from core.result_data_writers import TxtDataWriter
 
 input_path = "data/one_line_words.txt"
 output_path = "data/output.txt"
 
-reader = OneLineReader()
+reader = TxtFileReader()
 writer = TxtDataWriter(output_path)
+output = {}
+
 data = reader.read(input_path)
 url = settings.urls["translation"]
-output = {}
 
 print("Read data from file: ", input_path)
 
@@ -25,6 +26,8 @@ for word in data:
 
         if selection:
             selection = selection[0].text
+        else:
+            selection = ""
 
         print("'{}': '{}'".format(word, selection))
         output[word] = selection
