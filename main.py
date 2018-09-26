@@ -1,39 +1,9 @@
 import time
 import requests
-from bs4 import BeautifulSoup as bs
 from core import settings
 from core.input_data_readers import TxtFileReader
 from core.result_data_writers import TxtDataWriter
-
-
-def is_collocation(char_sequence):
-    collocation = True if word.find(" ") >= 0 else False
-    if len(char_sequence):  # TODO: improve it
-        pass
-
-    return collocation
-
-
-def get_translation(text, collocation):
-    """
-    Realizes parsing WoooordHunt html response depending of input word type.
-    Single word or collocation of words.
-
-    :param text: html text of response
-    :param collocation: bool parameter indicated if the searched word is collocation or not
-    :return: data structure of result
-    """
-    # TODO: improve it to parse both single word and its collocations
-    selector = settings.collocation_selector if collocation else settings.one_word_selector
-    soup = bs(text, features="html.parser")
-    selection = soup.select(selector)
-    result = ""
-
-    for i in selection:
-        result = result + i.text + "; "
-
-    # remove last '; ' symbols
-    return result[:-2]
+from core.functions import is_collocation, get_translation
 
 
 if __name__ == "__main__":
