@@ -47,6 +47,14 @@ def get_translation(text, collocation):
 
 
 def log(word, url, message):
+    """
+    Writes and log row to a file specified in settings.
+
+    :param word: current word where an error event was happened
+    :param url:  current url of request
+    :param message: error message
+    :return: None
+    """
     date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     log_row = "{time}, {word}, {url}, {message}\n".format(time=date_time, word=word, url=url, message=message)
     with open(settings.LOG_PATH, "a", encoding="utf-8") as log_file:
