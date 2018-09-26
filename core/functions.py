@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from . import settings
 from bs4 import BeautifulSoup as bs
 
@@ -42,3 +44,14 @@ def get_translation(text, collocation):
 
     # remove last '; ' symbols
     return result[:-2]
+
+
+def log(word, url, message):
+    date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    log_row = "{time}, {word}, {url}, {message}\n".format(time=date_time, word=word, url=url, message=message)
+    with open(settings.LOG_PATH, "a", encoding="utf-8") as log_file:
+        log_file.write(log_row)
+
+
+if __name__ == "__main__":
+    pass

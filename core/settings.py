@@ -21,3 +21,5 @@ headers = {
 one_word_selector = ".t_inline_en"
 collocation_selector = ".block.phrases i"
 request_timeout = 5
+
+LOG_PATH = "log.txt"

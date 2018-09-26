@@ -6,10 +6,10 @@ from core.result_data_writers import TxtDataWriter
 from core.functions import is_collocation, get_translation
 
 
-if __name__ == "__main__":
-    input_path = "data/one_line_words.txt"
-    output_path = "data/output.txt"
+input_path = "data/one_line_words.txt"
+output_path = "data/output.txt"
 
+if __name__ == "__main__":
     reader = TxtFileReader()
     writer = TxtDataWriter(output_path)
     output = {}
