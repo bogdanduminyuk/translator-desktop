@@ -1,3 +1,4 @@
+import json
 from .abstracts import ResultDataWriter
 
 
@@ -7,5 +8,4 @@ class TxtDataWriter(ResultDataWriter):
 
     def write(self, data):
         with open(self.path, "w", encoding="utf-8") as file:
-            for key, value in data.items():
-                file.write(key + ": " + str(value) + "\n")
+            file.write(json.dumps(data, ensure_ascii=False))

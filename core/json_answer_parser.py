@@ -55,16 +55,16 @@ def get_synonyms_antonyms(senses_list):
         filtrated_list = []
 
         for group in group_list:
-            copy_group = []
+            temp_str = ""
 
             for item in group:
                 if item not in copied:
-                    copy_group.append(item)
+                    temp_str += item + ";"
                     copied.add(item)
 
-            filtrated_list.append(copy_group)
+            filtrated_list.append(temp_str)
 
-        return [item for item in filter(lambda x: x != [], filtrated_list)]
+        return [item for item in filter(lambda x: x != "", filtrated_list)]
 
     synonyms_groups_list = []
     antonyms_groups_list = []
