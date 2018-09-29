@@ -1,7 +1,10 @@
+import time
 from datetime import datetime
 
-from . import settings
+import requests
 from bs4 import BeautifulSoup as bs
+from . import settings
+from .json_answer_parser import *
 
 
 def is_collocation(char_sequence):
@@ -24,18 +27,20 @@ def is_collocation(char_sequence):
     return True
 
 
-def get_translation(text, collocation):
+def get_translation(word):
     """
     Realizes parsing WoooordHunt html response depending of input word type.
     Single word or collocation of words.
 
-    :param text: html text of response
-    :param collocation: bool parameter indicated if the searched word is collocation or not
+    :param word: html text of response
     :return: data structure of result
     """
-    # TODO: improve it to parse both single word and its collocations
-    selector = settings.collocation_selector if collocation else settings.one_word_selector
-    soup = bs(text, features="html.parser")
+    response_text = request(word, "translation")
+    if not response_text:
+        return []
+
+    soup = bs(response_text, features="html.parser")
+    selector = settings.collocation_selector if is_collocation(word) else settings.one_word_selector
     selection = soup.select(selector)
     result = ""
 
@@ -59,6 +64,34 @@ def log(word, url, message):
     log_row = "{time}, {word}, {url}, {message}\n".format(time=date_time, word=word, url=url, message=message)
     with open(settings.LOG_PATH, "a", encoding="utf-8") as log_file:
         log_file.write(log_row)
+
+
+def request(word, key):
+    url = settings.urls[key].format(word_id=word)
+    response = requests.get(url, headers=settings.headers, timeout=settings.request_timeout)
+
+    if response.ok:
+        return response.text
+    elif response.status_code == 404:
+        log(word, url, "Word cannot be found, status  code: " + str(response.status_code))
+    else:
+        log(word, url, "Requests error! Status code: " + str(response.status_code))
+
+    return ""
+
+
+def get_word_from_api(word):
+    synonyms, antonyms = "", ""
+
+    if not is_collocation(word):
+        response_text = request(word, "synonym;antonym")
+        synonyms, antonyms = get_synonyms_antonyms(get_senses_list(response_text))
+
+    response_text = request(word, "definitions")
+    definitions = get_definitions(get_senses_list(response_text))
+
+    time.sleep(settings.requests_interval)
+    return synonyms, antonyms, definitions
 
 
 if __name__ == "__main__":

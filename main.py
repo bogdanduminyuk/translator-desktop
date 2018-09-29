@@ -1,9 +1,6 @@
-import time
-import requests
-from core import settings
 from core.input_data_readers import TxtFileReader
 from core.result_data_writers import TxtDataWriter
-from core.functions import is_collocation, get_translation, log
+from core.functions import get_translation, get_word_from_api
 
 input_path = "data/one_line_words.txt"
 output_path = "data/output.txt"
@@ -18,21 +15,17 @@ if __name__ == "__main__":
     print("Read data from file: ", input_path)
 
     for word in data:
-        url = settings.urls["translation"].format(word_id=word)
+        synonyms, antonyms, definitions = get_word_from_api(word)
+        translations = get_translation(word)
 
-        try:
-            response = requests.get(url.format(word_id=word), headers=settings.headers, timeout=settings.request_timeout)
+        output[word] = {
+            "synonyms": synonyms,
+            "antonyms": antonyms,
+            "definitions": definitions,
+            "translations": translations,
+        }
 
-            if response.ok:
-                translation = get_translation(response.text, is_collocation(word))
-
-                print("'{}': '{}'".format(word, translation))
-                output[word] = translation
-                time.sleep(0.33)
-            else:
-                raise ConnectionError(response)
-        except Exception as e:
-            log(word, url, str(e))
+        print(word + ".. OK")
 
     writer.write(output)
     print("OK")
