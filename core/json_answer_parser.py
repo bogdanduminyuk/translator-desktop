@@ -1,4 +1,4 @@
-import dpath
+import json
 
 
 def get_senses_list(source_data):
@@ -9,6 +9,7 @@ def get_senses_list(source_data):
     :return: filtrated list of results with lexical categories and senses
     """
     result_list = []
+    source_data = json.loads(source_data)
 
     for i, result in enumerate(source_data["results"]):
         item = {
@@ -19,7 +20,7 @@ def get_senses_list(source_data):
             "lexicalEntries": [],
         }
 
-        for lexicalEntry in dpath.util.get(source_data, "results/{i}/lexicalEntries".format(i=i)):
+        for lexicalEntry in result["lexicalEntries"]:
             senses = []
 
             for entry in lexicalEntry["entries"]:
@@ -71,30 +72,36 @@ def get_synonyms_antonyms(senses_list):
     for result in senses_list:
         for lexical_entry in result["lexicalEntries"]:
             for sense in lexical_entry["senses"]:
-                synonyms_group = []
-                antonyms_group = []
-
-                for synonym in sense.get("synonyms", []):
-                    synonyms_group.append(synonym["text"])
-
-                for antonym in sense.get("antonyms", []):
-                    antonyms_group.append(antonym["text"])
-
-                for sub_sense in sense.get("subsenses", []):
-                    for sub_synonym in sub_sense.get("synonyms", []):
-                        synonyms_group.append(sub_synonym["text"])
-
-                    for sub_antonym in sub_sense.get("antonyms", []):
-                        antonyms_group.append(sub_antonym["text"])
-
-                synonyms_groups_list.append(synonyms_group)
-                antonyms_groups_list.append(antonyms_group)
+                synonyms_groups_list.append(
+                    [synonym["text"] for synonym in sense.get("synonyms", [])]
+                )
+                antonyms_groups_list.append(
+                    [antonym["text"] for antonym in sense.get("antonyms", [])]
+                )
 
     return __filtrate_group_list__(synonyms_groups_list), __filtrate_group_list__(antonyms_groups_list)
 
 
 def get_definitions(senses_list):
-    pass
+    """
+    Analyzes senses list that can be got by calling `get_senses_list(source_data)`.
+
+    :param senses_list: senses_list: filtrated list of results
+    :return: list of lists of definitions
+    """
+    definitions_list = []
+
+    for result in senses_list:
+        for lexical_entry in result["lexicalEntries"]:
+            definitions = []
+
+            for sense in lexical_entry["senses"]:
+                for definition in sense.get("definitions", []):
+                    definitions.append(definition)
+
+            definitions_list.append(definitions)
+
+    return definitions_list
 
 
 if __name__ == "__main__":
