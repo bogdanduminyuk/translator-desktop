@@ -3,7 +3,6 @@ from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup as bs
-from . import settings
 from .json_answer_parser import *
 
 
@@ -67,6 +66,13 @@ def log(word, url, message):
 
 
 def request(word, key):
+    """
+    Makes a request to url from settings.url by given key.
+
+    :param word: word to get
+    :param key: key of settings.url dict
+    :return: response.text if success else empty string
+    """
     url = settings.urls[key].format(word_id=word)
     response = requests.get(url, headers=settings.headers, timeout=settings.request_timeout)
 
@@ -81,6 +87,12 @@ def request(word, key):
 
 
 def get_word_from_api(word):
+    """
+    Realizes requests for Oxford API to get synonyms, antonyms and definitions.
+
+    :param word: word to get
+    :return: tuple (synonyms, antonyms, definitions)
+    """
     synonyms, antonyms = "", ""
 
     if not is_collocation(word):

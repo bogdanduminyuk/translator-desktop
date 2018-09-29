@@ -20,7 +20,10 @@ headers = {
 
 one_word_selector = ".t_inline_en"
 collocation_selector = ".block.phrases i"
+
 request_timeout = 5
 requests_interval = 2
 
 LOG_PATH = "data/log.txt"
+
+values_delimiter = ";"

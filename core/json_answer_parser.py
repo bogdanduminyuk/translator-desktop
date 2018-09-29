@@ -1,5 +1,7 @@
 import json
 
+from core import settings
+
 
 def get_senses_list(source_data):
     """
@@ -47,9 +49,11 @@ def get_synonyms_antonyms(senses_list):
     def __filtrate_group_list__(group_list):
         """
         Removes copies of synonyms and antonyms from different groups.
+        Converts list of lists into list of strings. Now group will be
+        represented ad string of values divided with delimiter.
 
         :param group_list: list of synonyms or antonyms group (doesn't matter).
-        :return: filtrated list without copies and empty lists.
+        :return: filtrated list without copies and empty strings.
         """
         copied = set()
         filtrated_list = []
@@ -59,9 +63,10 @@ def get_synonyms_antonyms(senses_list):
 
             for item in group:
                 if item not in copied:
-                    temp_str += item + ";"
+                    temp_str += item + settings.values_delimiter
                     copied.add(item)
 
+            temp_str = temp_str[:-1]
             filtrated_list.append(temp_str)
 
         return [item for item in filter(lambda x: x != "", filtrated_list)]
