@@ -109,6 +109,8 @@ def get_word_from_api(word):
     :return: result dictionary with grouping by lexical entries
     """
     response_text = request(word, "definitions")
+    if not response_text:
+        return {}
     definitions_dict = get_definitions(get_senses_list(response_text))
 
     if not is_collocation(word):
