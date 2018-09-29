@@ -39,15 +39,30 @@ def get_translation(word):
         return []
 
     soup = bs(response_text, features="html.parser")
-    selector = settings.collocation_selector if is_collocation(word) else settings.one_word_selector
-    selection = soup.select(selector)
-    result = ""
+    result = {
+        "simple": "",
+        "collocations": [],
+        "lexicalCategories": []
+    }
 
-    for i in selection:
-        result = result + i.text + "; "
+    for i in soup.select(settings.one_word_selector):
+        result["simple"] += i.text + "; "
 
     # remove last '; ' symbols
-    return result[:-2]
+    result["simple"] = result["simple"][:-2]
+
+    headers = soup.select(settings.lexical_categories_selectors["header"])
+    rows = soup.select(settings.lexical_categories_selectors["rows"][0])
+
+    for header, row in zip(headers, rows):
+        translations = row.select(settings.lexical_categories_selectors["rows"][1])
+        result["lexicalCategories"].append({
+            "lexicalCategory": header.text[:-2],
+            "translations": [translation.text for translation in translations]
+        })
+
+    result["collocations"] = [collocation.text for collocation in soup.select(settings.collocation_selector)]
+    return result
 
 
 def log(word, url, message):

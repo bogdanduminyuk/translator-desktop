@@ -2,7 +2,7 @@ from core.input_data_readers import TxtFileReader
 from core.result_data_writers import TxtDataWriter
 from core.functions import get_translation, get_word_from_api
 
-input_path = "data/one_line_words.txt"
+input_path = "data/input.txt"
 output_path = "data/output.txt"
 
 if __name__ == "__main__":

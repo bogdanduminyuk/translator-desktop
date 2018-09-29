@@ -19,6 +19,10 @@ headers = {
 }
 
 one_word_selector = ".t_inline_en"
+lexical_categories_selectors = {
+    "header":  "h4.pos_item",
+    "rows": ["div.tr", "> span"]
+}
 collocation_selector = ".block.phrases i"
 
 request_timeout = 5
