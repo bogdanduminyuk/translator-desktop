@@ -8,7 +8,7 @@ class TxtFileReader(InputDataReader):
         if not os.path.exists(path):
             raise FileNotFoundError(path)
 
-        with open(path, "r") as file:
+        with open(path, "r", encoding="utf-8") as file:
             data = file.read().split(",")
 
             for i in range(len(data)):
