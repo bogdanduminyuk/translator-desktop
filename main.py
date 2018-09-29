@@ -15,14 +15,9 @@ if __name__ == "__main__":
     print("Read data from file: ", input_path)
 
     for word in data:
-        synonyms, antonyms, definitions = get_word_from_api(word)
-        translations = get_translation(word)
-
         output[word] = {
-            "synonyms": synonyms,
-            "antonyms": antonyms,
-            "definitions": definitions,
-            "translations": translations,
+            "api": get_word_from_api(word),
+            "translations": get_translation(word),
         }
 
         print(word + ".. OK")

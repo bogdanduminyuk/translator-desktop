@@ -91,19 +91,17 @@ def get_word_from_api(word):
     Realizes requests for Oxford API to get synonyms, antonyms and definitions.
 
     :param word: word to get
-    :return: tuple (synonyms, antonyms, definitions)
+    :return: result dictionary with grouping by lexical entries
     """
     response_text = request(word, "definitions")
-    definitions = get_definitions(get_senses_list(response_text))
-
-    synonyms, antonyms = "", ""
-    syn_ant = ""
+    definitions_dict = get_definitions(get_senses_list(response_text))
 
     if not is_collocation(word):
         response_text = request(word, "synonym;antonym")
         syn_ant = get_synonyms_antonyms(get_senses_list(response_text))
 
-        for def_result in definitions:
+        # sync definitions and synonyms|antonyms lexical categories
+        for def_result in definitions_dict:
             for syn_ant_result in syn_ant:
                 for def_lexical_entry in def_result["lexicalEntries"]:
                     for syn_ant_lexical_entry in syn_ant_result["lexicalEntries"]:
@@ -111,7 +109,7 @@ def get_word_from_api(word):
                             def_lexical_entry.update(syn_ant_lexical_entry)
 
     time.sleep(settings.requests_interval)
-    return syn_ant, definitions
+    return definitions_dict
 
 
 if __name__ == "__main__":

@@ -22,11 +22,11 @@ one_word_selector = ".t_inline_en"
 collocation_selector = ".block.phrases i"
 
 request_timeout = 5
-requests_interval = 2
+requests_interval = 1
 
 LOG_PATH = "data/log.txt"
 
 values_delimiter = ";"
 
-MAX_SENSES_COUNT = 10
+MAX_CATEGORY_SENSES_COUNT = 20
 MAX_ITEMS_COUNT = 7

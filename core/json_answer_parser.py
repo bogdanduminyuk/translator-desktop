@@ -1,7 +1,4 @@
 import json
-
-import dpath
-
 from core import settings
 
 
@@ -17,10 +14,10 @@ def get_senses_list(source_data):
 
     for i, result in enumerate(source_data["results"]):
         item = {
-            "id": result["id"],
-            "word": result["word"],
-            "language": result["language"],
-            "type": result["type"],
+            # "id": result["id"],
+            # "word": result["word"],
+            # "language": result["language"],
+            # "type": result["type"],
             "lexicalEntries": [],
         }
 
@@ -28,7 +25,6 @@ def get_senses_list(source_data):
             senses = []
 
             for entry in lexicalEntry["entries"]:
-                # min(len(entry["senses"]), settings.MAX_SENSES_COUNT)
                 for sense in entry["senses"]:
                     senses.append(sense)
 
@@ -79,12 +75,12 @@ def get_synonyms_antonyms(senses_list):
             lexical_entry["synonyms"] = []
             lexical_entry["antonyms"] = []
 
-            for sense in lexical_entry["senses"]:
+            for sense in lexical_entry["senses"][:settings.MAX_CATEGORY_SENSES_COUNT]:
                 lexical_entry["synonyms"].append(
-                    [synonym["text"] for synonym in sense.get("synonyms", [])]
+                    [synonym["text"] for synonym in sense.get("synonyms", [])[:settings.MAX_ITEMS_COUNT]]
                 )
                 lexical_entry["antonyms"].append(
-                    [antonym["text"] for antonym in sense.get("antonyms", [])]
+                    [antonym["text"] for antonym in sense.get("antonyms", [])[:settings.MAX_ITEMS_COUNT]]
                 )
 
             lexical_entry["synonyms"] = __filtrate_group_list__(lexical_entry["synonyms"])
