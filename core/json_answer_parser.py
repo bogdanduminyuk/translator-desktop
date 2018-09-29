@@ -93,5 +93,9 @@ def get_synonyms_antonyms(senses_list):
     return __filtrate_group_list__(synonyms_groups_list), __filtrate_group_list__(antonyms_groups_list)
 
 
+def get_definitions(senses_list):
+    pass
+
+
 if __name__ == "__main__":
     pass
