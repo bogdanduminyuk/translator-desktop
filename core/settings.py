@@ -27,3 +27,6 @@ requests_interval = 2
 LOG_PATH = "data/log.txt"
 
 values_delimiter = ";"
+
+MAX_SENSES_COUNT = 10
+MAX_ITEMS_COUNT = 7
