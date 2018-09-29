@@ -1,5 +1,7 @@
 import json
 
+import dpath
+
 from core import settings
 
 
@@ -26,6 +28,7 @@ def get_senses_list(source_data):
             senses = []
 
             for entry in lexicalEntry["entries"]:
+                # min(len(entry["senses"]), settings.MAX_SENSES_COUNT)
                 for sense in entry["senses"]:
                     senses.append(sense)
 
@@ -71,20 +74,24 @@ def get_synonyms_antonyms(senses_list):
 
         return [item for item in filter(lambda x: x != "", filtrated_list)]
 
-    synonyms_groups_list = []
-    antonyms_groups_list = []
-
     for result in senses_list:
         for lexical_entry in result["lexicalEntries"]:
+            lexical_entry["synonyms"] = []
+            lexical_entry["antonyms"] = []
+
             for sense in lexical_entry["senses"]:
-                synonyms_groups_list.append(
+                lexical_entry["synonyms"].append(
                     [synonym["text"] for synonym in sense.get("synonyms", [])]
                 )
-                antonyms_groups_list.append(
+                lexical_entry["antonyms"].append(
                     [antonym["text"] for antonym in sense.get("antonyms", [])]
                 )
 
-    return __filtrate_group_list__(synonyms_groups_list), __filtrate_group_list__(antonyms_groups_list)
+            lexical_entry["synonyms"] = __filtrate_group_list__(lexical_entry["synonyms"])
+            lexical_entry["antonyms"] = __filtrate_group_list__(lexical_entry["antonyms"])
+            lexical_entry.pop("senses", None)
+
+    return senses_list
 
 
 def get_definitions(senses_list):
@@ -92,10 +99,8 @@ def get_definitions(senses_list):
     Analyzes senses list that can be got by calling `get_senses_list(source_data)`.
 
     :param senses_list: senses_list: filtrated list of results
-    :return: list of lists of definitions
+    :return: updated senses list
     """
-    definitions_list = []
-
     for result in senses_list:
         for lexical_entry in result["lexicalEntries"]:
             definitions = []
@@ -104,9 +109,10 @@ def get_definitions(senses_list):
                 for definition in sense.get("definitions", []):
                     definitions.append(definition)
 
-            definitions_list.append(definitions)
+            lexical_entry["definitions"] = definitions
+            lexical_entry.pop("senses", None)
 
-    return definitions_list
+    return senses_list
 
 
 if __name__ == "__main__":

@@ -93,17 +93,25 @@ def get_word_from_api(word):
     :param word: word to get
     :return: tuple (synonyms, antonyms, definitions)
     """
-    synonyms, antonyms = "", ""
-
-    if not is_collocation(word):
-        response_text = request(word, "synonym;antonym")
-        synonyms, antonyms = get_synonyms_antonyms(get_senses_list(response_text))
-
     response_text = request(word, "definitions")
     definitions = get_definitions(get_senses_list(response_text))
 
+    synonyms, antonyms = "", ""
+    syn_ant = ""
+
+    if not is_collocation(word):
+        response_text = request(word, "synonym;antonym")
+        syn_ant = get_synonyms_antonyms(get_senses_list(response_text))
+
+        for def_result in definitions:
+            for syn_ant_result in syn_ant:
+                for def_lexical_entry in def_result["lexicalEntries"]:
+                    for syn_ant_lexical_entry in syn_ant_result["lexicalEntries"]:
+                        if def_lexical_entry["lexicalCategory"] == syn_ant_lexical_entry["lexicalCategory"]:
+                            def_lexical_entry.update(syn_ant_lexical_entry)
+
     time.sleep(settings.requests_interval)
-    return synonyms, antonyms, definitions
+    return syn_ant, definitions
 
 
 if __name__ == "__main__":
