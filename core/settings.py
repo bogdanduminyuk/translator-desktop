@@ -1,6 +1,11 @@
+import os
+
+
 # API settings
 application_id = "fadf5485"
 application_key = "48fbdacce1908543d0229902ed1917e9"
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # parsing settings
 urls = {
