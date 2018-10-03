@@ -43,3 +43,10 @@ MAX_ITEMS_COUNT = 7
 # USER SETTINGS
 MAX_SYNONYMS_DISPLAYED_COUNT = 5
 MAX_ANTONYMS_DISPLAYED_COUNT = 5
+
+writer_settings = {
+    "font-family": "Times New Roman",
+    "font-size": 12,
+    "line-spacing": 1.15,
+    "margin": [1, 1, 1, 1],
+}
