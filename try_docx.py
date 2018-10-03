@@ -3,6 +3,8 @@ import json
 from docx import Document
 from docx.shared import Cm, Pt
 
+from core import settings
+
 
 def get_settings():
     return {
@@ -13,76 +15,80 @@ def get_settings():
     }
 
 
-def stub_rows():
-    return (
-        ('№\nп/п', 'Слово', 'Перевод', 'Синонимы', 'Антонимы', 'Определения'),
-        ('1', 'word', 'translation', 'synonyms', 'antonyms', 'definitions'),
-        ('2', 'word', 'translation', 'synonyms', 'antonyms', 'definitions'),
-        ('3', 'word', 'translation', 'synonyms', 'antonyms', 'definitions'),
-        ('4', 'word', 'translation', 'synonyms', 'antonyms', 'definitions'),
-        ('5', 'word', 'translation', 'synonyms', 'antonyms', 'definitions'),
-    )
-
-
-def get_records():
-    def get_data():
+def insert_table(doc, data=None, columns_settings=None):
+    def get_data_stub():
         with open("data/output.txt", "r", encoding="utf-8") as file:
             return json.loads(file.read())
 
-    def get_translations(data):
+    def columns_settings_stub():
         return {
-            word: value["translations"]["simple"]
-            for word, value in data.items()
+            "syn": True,
+            "ant": True,
+            "def": True,
         }
 
-    def parse_api(data):
-        displayed_data = []
-        synonyms, antonyms, definitions = "", "", ""
+    def compose_header(cols_settings):
+        header_row = ["№\nп/п", "Слово", "Перевод"]
+        header_composer = [
+            ("syn", "Синонимы"),
+            ("ant", "Антонимы"),
+            ("def", "Определения")
+        ]
 
-        for word in data.keys():
-            lexical_entries = data[word]["api"][0]["lexicalEntries"]
+        for key, item in header_composer:
+            if cols_settings.get(key, False):
+                header_row.append(item)
 
-            for lexical_category in lexical_entries:
-                synonyms_list = lexical_category.get("synonyms", [])
-                antonyms_list = lexical_category.get("antonyms", [])
-                definitions_list = lexical_category.get("definitions", [])
+        return header_row
 
-                if synonyms_list:
-                    synonyms += "Категория: " + lexical_category["lexicalCategory"] + "\n"
-                    for synonym in synonyms_list:
-                        synonyms += synonym + "\n"
+    def insert_bold_category(cell, category):
+        if cell.paragraphs[0].text != "":
+            cell.add_paragraph()
 
-                if antonyms_list:
-                    antonyms += "Категория: " + lexical_category["lexicalCategory"] + "\n"
-                    for antonym in antonyms_list:
-                        antonyms += antonym + "\n"
+        to_be_bold = cell.paragraphs[len(cell.paragraphs) - 1].add_run(category)
+        to_be_bold.font.bold = True
 
-                if definitions_list:
-                    definitions += "Категория: " + lexical_category["lexicalCategory"] + "\n"
-                    for definition in definitions_list:
-                        definitions += definition + "\n"
+    def insert_lexical_category(cell, category, key, constraint=None):
+        insert_bold_category(cell, category["lexicalCategory"])
 
-            displayed_data.append((
-                word, synonyms, antonyms, definitions
-            ))
+        for item in category.get(key, [])[:constraint]:
+            cell.add_paragraph("- " + item + ";")
 
-        return displayed_data
+    def insert_header(table, header):
+        for i, cell in enumerate(table.rows[0].cells):
+            cell.text = header[i]
 
-    data = get_data()
-    translations = get_translations(data)
-    parsed_api = parse_api(data)
+        table.add_row()
 
-    rows = []
+    data = get_data_stub()
+    columns_settings = columns_settings_stub()
+    header = compose_header(columns_settings)
 
-    i = 1
+    table = doc.add_table(rows=len(data.keys()), cols=len(header))
+    table.style = 'Table Grid'
+    insert_header(table, header)
 
-    for word, synonyms, antonyms, definitions in parsed_api:
-        rows.append(
-            (str(i), word, translations[word], synonyms, antonyms, definitions)
-        )
+    i = 0
+
+    for word, word_data in data.items():
         i += 1
+        row = table.rows[i]
+        table_builder = (
+            (3, "syn", "synonyms", settings.MAX_SYNONYMS_DISPLAYED_COUNT),
+            (4, "ant", "antonyms", settings.MAX_ANTONYMS_DISPLAYED_COUNT),
+            (5, "def", "definitions", None),
+        )
 
-    return rows
+        row.cells[0].text = str(i)
+        row.cells[1].text = word
+
+        for lexical_category in word_data["translations"]["lexicalCategories"]:
+            insert_lexical_category(row.cells[2], lexical_category, "translations")
+
+        for lexical_category in word_data["api"][0]["lexicalEntries"]:
+            for idx, settings_key, cat_key, settings_constraint in table_builder:
+                if columns_settings.get(settings_key, False):
+                    insert_lexical_category(row.cells[idx], lexical_category, cat_key, settings_constraint)
 
 
 def switch_orientation(doc):
@@ -110,22 +116,24 @@ def change_font(doc, family, size, interval):
 
 if __name__ == "__main__":
     document = Document()
-    settings = get_settings()
+    user_settings = get_settings()
 
     # TODO: уточнить
-    # switch_orientation(document)
+    switch_orientation(document)
 
-    set_margins(document, settings["margin"])
-    change_font(document, settings["font-family"], settings["font-size"], settings["line-spacing"])
+    set_margins(document, user_settings["margin"])
+    change_font(document, user_settings["font-family"], user_settings["font-size"], user_settings["line-spacing"])
+
+    insert_table(document)
 
     # records = stub_rows()
-    records = get_records()
+    # records = get_records()
+    #
+    # table = document.add_table(rows=len(records), cols=6)
+    # table.style = 'Table Grid'
+    #
+    # for i, row in enumerate(table.rows):
+    #     for j, cell in enumerate(row.cells):
+    #         cell.text = records[i][j]
 
-    table = document.add_table(rows=len(records), cols=6)
-    table.style = 'Table Grid'
-
-    for i, row in enumerate(table.rows):
-        for j, cell in enumerate(row.cells):
-            cell.text = records[i][j]
-
-    document.save('demo.docx')
+    document.save('demo3.docx')
