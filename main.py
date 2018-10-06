@@ -30,7 +30,7 @@ if __name__ == "__main__":
                 "translation": get_translation(word),
             }
 
-            Database.set(word, output[word]["translation"], output[word]["api"][0])
+            Database.set(word, output[word]["translation"], output[word]["api"])
 
         print(word + ".. OK")
 

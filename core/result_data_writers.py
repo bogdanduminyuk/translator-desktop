@@ -101,7 +101,7 @@ class DocDataWriter(ResultDataWriter):
             for lexical_category in word_data["translation"]["lexicalCategories"]:
                 insert_lexical_category(row.cells[2], lexical_category, "translation")
 
-            for lexical_category in word_data["api"][0]["lexicalEntries"]:
+            for lexical_category in word_data["api"]["lexicalEntries"]:
                 for idx, settings_key, cat_key, settings_constraint in table_builder:
                     if self.columns_settings.get(settings_key, False):
                         insert_lexical_category(row.cells[idx], lexical_category, cat_key, settings_constraint)
