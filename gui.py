@@ -1,10 +1,10 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from mainwindow import Ui_MainWindow
+from gui.implementation.mainwindow import MainWindowImplementation
 
 app = QApplication(sys.argv)
 window = QMainWindow()
-ui = Ui_MainWindow()
+ui = MainWindowImplementation()
 ui.setupUi(window)
 
 window.show()
