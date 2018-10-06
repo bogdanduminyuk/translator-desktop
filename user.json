@@ -1,0 +1,28 @@
+{
+  "general": {
+    "application_id": "fadf5485",
+    "application_key": "48fbdacce1908543d0229902ed1917e9"
+  },
+
+  "advanced": {
+    "request_timeout": 5,
+    "request_interval": 1,
+    "delimiter": ";",
+    "database": {
+      "save_category_senses_count": 20,
+      "save_items_count": 7
+    }
+  },
+
+  "output": {
+    "synonyms_count": 5,
+    "antonyms_count": 5
+  },
+
+  "docx-writer": {
+    "font-family": "Times New Roman",
+    "font-size": 12,
+    "line-spacing": 1.15,
+    "margin": [1, 1, 1, 1]
+  }
+}

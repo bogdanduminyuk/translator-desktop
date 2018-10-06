@@ -19,7 +19,7 @@ class TxtDataWriter(ResultDataWriter):
 class DocDataWriter(ResultDataWriter):
     def __init__(self, filename, columns_settings):
         self.filename = filename
-        self.settings = settings.writer_settings
+        self.settings = settings.user["docx-writer"]
         self.columns_settings = columns_settings
 
     def write(self, data):
@@ -90,8 +90,8 @@ class DocDataWriter(ResultDataWriter):
             table_builder = (
                 # FIXME: fix idx here! calculate it because if 'syn' does not exist
                 # FIXME: it throws tuple IndexError
-                (3, "syn", "synonyms", settings.MAX_SYNONYMS_DISPLAYED_COUNT),
-                (4, "ant", "antonyms", settings.MAX_ANTONYMS_DISPLAYED_COUNT),
+                (3, "syn", "synonyms", settings.user["output"]["synonyms_count"]),
+                (4, "ant", "antonyms", settings.user["output"]["antonyms_count"]),
                 (5, "def", "definitions", None),
             )
 

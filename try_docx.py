@@ -74,8 +74,8 @@ def insert_table(doc, data=None, columns_settings=None):
         i += 1
         row = table.rows[i]
         table_builder = (
-            (3, "syn", "synonyms", settings.MAX_SYNONYMS_DISPLAYED_COUNT),
-            (4, "ant", "antonyms", settings.MAX_ANTONYMS_DISPLAYED_COUNT),
+            (3, "syn", "synonyms", settings.user["output"]["synonyms_count"]),
+            (4, "ant", "antonyms", settings.user["output"]["antonyms_count"]),
             (5, "def", "definitions", None),
         )
 

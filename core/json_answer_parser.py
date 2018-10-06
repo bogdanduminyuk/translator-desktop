@@ -62,7 +62,7 @@ def get_synonyms_antonyms(senses_list):
 
             for item in group:
                 if item not in copied:
-                    temp_str += item + settings.values_delimiter
+                    temp_str += item + settings.user["advanced"]["delimiter"]
                     copied.add(item)
 
             temp_str = temp_str[:-1]
@@ -75,12 +75,12 @@ def get_synonyms_antonyms(senses_list):
             lexical_entry["synonyms"] = []
             lexical_entry["antonyms"] = []
 
-            for sense in lexical_entry["senses"][:settings.MAX_CATEGORY_SENSES_COUNT]:
+            for sense in lexical_entry["senses"][:settings.user["advanced"]["database"]["save_category_senses_count"]]:
                 lexical_entry["synonyms"].append(
-                    [synonym["text"] for synonym in sense.get("synonyms", [])[:settings.MAX_ITEMS_COUNT]]
+                    [synonym["text"] for synonym in sense.get("synonyms", [])[:settings.user["advanced"]["database"]["save_items_count"]]]
                 )
                 lexical_entry["antonyms"].append(
-                    [antonym["text"] for antonym in sense.get("antonyms", [])[:settings.MAX_ITEMS_COUNT]]
+                    [antonym["text"] for antonym in sense.get("antonyms", [])[:settings.user["advanced"]["database"]["save_items_count"]]]
                 )
 
             lexical_entry["synonyms"] = __filtrate_group_list__(lexical_entry["synonyms"])

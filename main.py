@@ -26,7 +26,7 @@ if __name__ == "__main__":
             output[word] = from_db
         else:
             output[word] = {
-                "api": get_word_from_api(word),
+                "api": get_word_from_api(word)[0],
                 "translation": get_translation(word),
             }
 

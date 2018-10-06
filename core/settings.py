@@ -1,11 +1,12 @@
 import os
-
-
-# API settings
-application_id = "fadf5485"
-application_key = "48fbdacce1908543d0229902ed1917e9"
+import json
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+USER_CFG = os.path.join(BASE_DIR, "user.json")
+
+with open(USER_CFG, "r", encoding="utf-8") as cfg_file:
+    user = json.load(cfg_file)
+
 
 # parsing settings
 urls = {
@@ -15,8 +16,8 @@ urls = {
 }
 
 headers = {
-    "app_id": "fadf5485",
-    "app_key": "48fbdacce1908543d0229902ed1917e9",
+    "app_id": user["general"]["application_id"],
+    "app_key": user["general"]["application_key"],
     "Accept": "application/json",
 
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
@@ -30,26 +31,7 @@ lexical_categories_selectors = {
 }
 collocation_selector = ".block.phrases i"
 
-request_timeout = 5
-requests_interval = 1
-
 LOG_PATH = "data/log.txt"
-
-values_delimiter = ";"
-
-MAX_CATEGORY_SENSES_COUNT = 20
-MAX_ITEMS_COUNT = 7
-
-# USER SETTINGS
-MAX_SYNONYMS_DISPLAYED_COUNT = 5
-MAX_ANTONYMS_DISPLAYED_COUNT = 5
-
-writer_settings = {
-    "font-family": "Times New Roman",
-    "font-size": 12,
-    "line-spacing": 1.15,
-    "margin": [1, 1, 1, 1],
-}
 
 # Database settings
 db_urls = {

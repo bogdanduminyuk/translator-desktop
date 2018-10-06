@@ -89,7 +89,7 @@ def request(word, key):
     :return: response.text if success else empty string
     """
     url = settings.urls[key].format(word_id=word)
-    response = requests.get(url, headers=settings.headers, timeout=settings.request_timeout)
+    response = requests.get(url, headers=settings.headers, timeout=settings.user["advanced"]["request_timeout"])
 
     if response.ok:
         return response.text
@@ -125,7 +125,7 @@ def get_word_from_api(word):
                         if def_lexical_entry["lexicalCategory"] == syn_ant_lexical_entry["lexicalCategory"]:
                             def_lexical_entry.update(syn_ant_lexical_entry)
 
-    time.sleep(settings.requests_interval)
+    time.sleep(settings.user["advanced"]["request_interval"])
     return definitions_dict
 
 
