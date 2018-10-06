@@ -68,9 +68,9 @@ class DocDataWriter(ResultDataWriter):
                 cell.add_paragraph("- " + item + ";")
 
         def insert_header(doc_table, table_header):
+            doc_table.add_row()
             for i, cell in enumerate(doc_table.rows[0].cells):
                 cell.text = table_header[i]
-                doc_table.add_row()
 
         document = Document()
         switch_orientation(document)
