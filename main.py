@@ -6,6 +6,8 @@ from core.db import Database
 input_path = "data/input.txt"
 output_path = "data/output.docx"
 
+# TODO: fix word error
+
 if __name__ == "__main__":
     reader = TxtFileReader()
     writer = DocDataWriter(output_path, {
