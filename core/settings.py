@@ -50,3 +50,10 @@ writer_settings = {
     "line-spacing": 1.15,
     "margin": [1, 1, 1, 1],
 }
+
+# Database settings
+db_urls = {
+    "count": "http://bogdanduminyuk.pythonanywhere.com/count",
+    "get": "http://bogdanduminyuk.pythonanywhere.com/get_word",
+    "set": "http://bogdanduminyuk.pythonanywhere.com/set_word",
+}
