@@ -98,8 +98,8 @@ class DocDataWriter(ResultDataWriter):
             row.cells[0].text = str(i)
             row.cells[1].text = word
 
-            for lexical_category in word_data["translations"]["lexicalCategories"]:
-                insert_lexical_category(row.cells[2], lexical_category, "translations")
+            for lexical_category in word_data["translation"]["lexicalCategories"]:
+                insert_lexical_category(row.cells[2], lexical_category, "translation")
 
             for lexical_category in word_data["api"][0]["lexicalEntries"]:
                 for idx, settings_key, cat_key, settings_constraint in table_builder:
