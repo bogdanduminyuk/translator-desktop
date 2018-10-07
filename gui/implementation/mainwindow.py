@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QDialog, QMessageBox
 from gui.base.mainwindow import Ui_MainWindow
-from gui.base.settings import Ui_DialogSettings
+from gui.implementation.settings import Ui_DialogSettingsImplementation
 from core.db import Database
 
 
@@ -30,7 +30,7 @@ class MainWindowImplementation(Ui_MainWindow):
 
     def settings(self):
         settingsDialog = QDialog(self.owner)
-        ui = Ui_DialogSettings()
+        ui = Ui_DialogSettingsImplementation()
         ui.setupUi(settingsDialog)
         settingsDialog.exec_()
 
