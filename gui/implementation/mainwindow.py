@@ -15,6 +15,7 @@ class MainWindowImplementation(Ui_MainWindow):
         self.actionAbout.triggered.connect(self.about)
         self.actionOpenSettings.triggered.connect(self.settings)
         self.pushButton.clicked.connect(self.find)
+        self.groupBoxProgress.setVisible(False)
         count = Database.count()
         self.statusbar.showMessage("В базе {} слов".format(count))
 
@@ -35,4 +36,12 @@ class MainWindowImplementation(Ui_MainWindow):
         settingsDialog.exec_()
 
     def find(self):
-        self.statusbar.showMessage("Find")
+        words = self.textEdit.toPlainText()
+        options = {
+            "syn": self.checkBoxSynonyms.isChecked(),
+            "ant": self.checkBoxAntonyms.isChecked(),
+            "def": self.checkBoxDefinitons.isChecked(),
+        }
+
+        self.groupBoxProgress.setVisible(True)
+
