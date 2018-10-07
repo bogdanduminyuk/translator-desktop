@@ -40,8 +40,8 @@ class DocDataWriter(ResultDataWriter):
         def change_font(doc, family, size, interval):
             style = doc.styles['Normal']
             style.font.name = family
-            style.font.size = Pt(size)
-            style.paragraph_format.line_spacing = interval
+            style.font.size = Pt(int(size))
+            style.paragraph_format.line_spacing = float(interval)
 
         def compose_header(cols_settings):
             header_row = ["№\nп/п", "Слово", "Перевод"]
