@@ -1,7 +1,11 @@
-from PyQt5.QtWidgets import QDialog, QMessageBox
+from PyQt5.QtWidgets import QDialog, QMessageBox, QFileDialog
 from gui.base.mainwindow import Ui_MainWindow
 from gui.implementation.settings import Ui_DialogSettingsImplementation
+
 from core.db import Database
+from core.input_data_readers import PlainTextReader
+from core.result_data_writers import DocDataWriter
+from core.functions import get_translation, get_word_from_api
 
 
 class MainWindowImplementation(Ui_MainWindow):
@@ -38,10 +42,50 @@ class MainWindowImplementation(Ui_MainWindow):
     def find(self):
         words = self.textEdit.toPlainText()
         options = {
-            "syn": self.checkBoxSynonyms.isChecked(),
-            "ant": self.checkBoxAntonyms.isChecked(),
-            "def": self.checkBoxDefinitons.isChecked(),
+            "syn": True,  # self.checkBoxSynonyms.isChecked(),
+            "ant": True,  # self.checkBoxAntonyms.isChecked(),
+            "def": True,  # self.checkBoxDefinitons.isChecked(),
         }
 
+        reader = PlainTextReader()
+        words = reader.read(words)
+        total, current = len(words), 0
+        output = {}
+
+        self.labelCurrentWord.setText("")
+        self.progressBar.setMaximum(total)
         self.groupBoxProgress.setVisible(True)
 
+        for word in words:
+            self.labelCurrentWord.setText(word)
+            from_db = Database.get(word)
+
+            if from_db:
+                output[word] = from_db
+            else:
+                output[word] = {
+                    "api": get_word_from_api(word)[0],
+                    "translation": get_translation(word),
+                }
+
+                Database.set(word, output[word]["translation"], output[word]["api"])
+
+            current += 1
+            self.progressBar.setValue(current)
+
+        path, filter = QFileDialog.getSaveFileName(self.owner, "Сохранить как..", filter="Документ Word (*.docx)")
+
+        try:
+            writer = DocDataWriter(path, options)
+            writer.write(output)
+        except Exception as e:
+            self.statusbar.showMessage("Ошибка сохранения файла " + path)
+            msg = QMessageBox()
+            msg.setWindowTitle("Exception")
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText(str(e))
+            msg.exec_()
+        else:
+            self.statusbar.showMessage(path + " сохранен успешно")
+        finally:
+            self.groupBoxProgress.setVisible(False)
