@@ -9,8 +9,14 @@ class TxtFileReader(InputDataReader):
             raise FileNotFoundError(path)
 
         with open(path, "r", encoding="utf-8") as file:
-            data = file.read().split(",")
+            return PlainTextReader().read(file.read())
 
-            for i in range(len(data)):
-                data[i] = data[i].strip()
-            return data
+
+class PlainTextReader(InputDataReader):
+    def read(self, plain_text):
+        data_list = plain_text.split(",")
+
+        for i in range(len(data_list)):
+            data_list[i] = data_list[i].strip()
+
+        return data_list
