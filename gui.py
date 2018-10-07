@@ -4,7 +4,7 @@ from gui.implementation.mainwindow import MainWindowImplementation
 
 app = QApplication(sys.argv)
 window = QMainWindow()
-ui = MainWindowImplementation()
+ui = MainWindowImplementation(window)
 ui.setupUi(window)
 
 window.show()
