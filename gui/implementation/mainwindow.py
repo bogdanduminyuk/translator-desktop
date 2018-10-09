@@ -42,9 +42,9 @@ class MainWindowImplementation(Ui_MainWindow):
     def find(self):
         words = self.textEdit.toPlainText()
         options = {
-            "syn": True,  # self.checkBoxSynonyms.isChecked(),
-            "ant": True,  # self.checkBoxAntonyms.isChecked(),
-            "def": True,  # self.checkBoxDefinitons.isChecked(),
+            "syn": self.checkBoxSynonyms.isChecked(),
+            "ant": self.checkBoxAntonyms.isChecked(),
+            "def": self.checkBoxDefinitons.isChecked(),
         }
 
         reader = PlainTextReader()

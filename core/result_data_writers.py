@@ -82,29 +82,32 @@ class DocDataWriter(ResultDataWriter):
         table.style = 'Table Grid'
         insert_header(table, header)
 
-        i = 0
+        row_idx = 0
 
         for word, word_data in data.items():
-            i += 1
-            row = table.rows[i]
+            row_idx += 1
+            row = table.rows[row_idx]
             table_builder = (
                 # FIXME: fix idx here! calculate it because if 'syn' does not exist
                 # FIXME: it throws tuple IndexError
-                (3, "syn", "synonyms", settings.user["output"]["synonyms_count"]),
-                (4, "ant", "antonyms", settings.user["output"]["antonyms_count"]),
-                (5, "def", "definitions", None),
+                ("syn", "synonyms", settings.user["output"]["synonyms_count"]),
+                ("ant", "antonyms", settings.user["output"]["antonyms_count"]),
+                ("def", "definitions", None),
             )
 
-            row.cells[0].text = str(i)
+            row.cells[0].text = str(row_idx)
             row.cells[1].text = word
 
             for lexical_category in word_data["translation"]["lexicalCategories"]:
                 insert_lexical_category(row.cells[2], lexical_category, "translations")
 
             for lexical_category in word_data["api"]["lexicalEntries"]:
-                for idx, settings_key, cat_key, settings_constraint in table_builder:
+                col_idx = 3
+
+                for settings_key, cat_key, settings_constraint in table_builder:
                     if self.columns_settings.get(settings_key, False):
-                        insert_lexical_category(row.cells[idx], lexical_category, cat_key, settings_constraint)
+                        insert_lexical_category(row.cells[col_idx], lexical_category, cat_key, settings_constraint)
+                        col_idx += 1
 
         document.save(self.filename)
 
