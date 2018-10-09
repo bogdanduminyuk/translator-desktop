@@ -25,7 +25,7 @@ def get_senses_list(source_data):
             senses = []
 
             for entry in lexicalEntry["entries"]:
-                for sense in entry["senses"]:
+                for sense in entry.get("senses", []):
                     senses.append(sense)
 
             item["lexicalEntries"].append({

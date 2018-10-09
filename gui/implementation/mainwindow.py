@@ -5,7 +5,7 @@ from gui.implementation.settings import Ui_DialogSettingsImplementation
 from core.db import Database
 from core.input_data_readers import PlainTextReader
 from core.result_data_writers import DocDataWriter
-from core.functions import get_translation, get_word_from_api
+from core.functions import get_translation, get_word_from_api, is_collocation
 
 
 class MainWindowImplementation(Ui_MainWindow):
@@ -63,8 +63,15 @@ class MainWindowImplementation(Ui_MainWindow):
             if from_db:
                 output[word] = from_db
             else:
+                api = {}
+                if not is_collocation(word):
+                    api = get_word_from_api(word)
+
+                    if len(api) > 0:
+                        api = api[0]
+
                 output[word] = {
-                    "api": get_word_from_api(word)[0],
+                    "api": api,
                     "translation": get_translation(word),
                 }
 

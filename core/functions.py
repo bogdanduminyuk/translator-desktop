@@ -12,9 +12,9 @@ def is_collocation(char_sequence):
     :param char_sequence: sequence of characters
     :return: True if char_sequence is collocation else False
     """
-    min_length, space, max_space_count = 2, " ", 1
+    min_length, space = 2, " "
 
-    if len(char_sequence) < min_length or char_sequence.count(space) != max_space_count:
+    if len(char_sequence) < min_length or char_sequence.count(space) not in [1, 2, 3]:
         return False
 
     lexemes = char_sequence.split(space)
@@ -115,6 +115,8 @@ def get_word_from_api(word):
 
     if not is_collocation(word):
         response_text = request(word, "synonym;antonym")
+        if not response_text:
+            return definitions_dict
         syn_ant = get_synonyms_antonyms(get_senses_list(response_text))
 
         # sync definitions and synonyms|antonyms lexical categories

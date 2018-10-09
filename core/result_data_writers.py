@@ -101,7 +101,13 @@ class DocDataWriter(ResultDataWriter):
             for lexical_category in word_data["translation"]["lexicalCategories"]:
                 insert_lexical_category(row.cells[2], lexical_category, "translations")
 
-            for lexical_category in word_data["api"]["lexicalEntries"]:
+            for collocation in word_data["translation"]["collocations"]:
+                if row.cells[2].paragraphs[0].text != "":
+                    row.cells[2].add_paragraph()
+
+                row.cells[2].paragraphs[len(row.cells[2].paragraphs) - 1].text = "- " + collocation
+
+            for lexical_category in word_data["api"].get("lexicalEntries", []):
                 col_idx = 3
 
                 for settings_key, cat_key, settings_constraint in table_builder:
