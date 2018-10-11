@@ -1,5 +1,10 @@
-.idea
-env
+# folders
+data/
+build/
+dist/
+.idea/
+env/
+
+# extensions
 *.pyc
 *.txt
-data/
