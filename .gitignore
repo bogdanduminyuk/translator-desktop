@@ -1,0 +1,10 @@
+# folders
+data/
+build/
+dist/
+.idea/
+env*/
+
+# extensions
+*.pyc
+*.txt
