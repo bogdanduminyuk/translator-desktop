@@ -14,11 +14,22 @@ class MainWindowImplementation(Ui_MainWindow):
         super(MainWindowImplementation, self).setupUi(MainWindow)
         self.pushButtonFind.clicked.connect(self.find)
         self.actionReset.triggered.connect(self.reset)
-        self.progressBar.setValue(0)
         self.progressBar.hide()
 
     def reset(self):
-        QMessageBox.information(self.owner, "Сброс", "Действие при сбросе окна")
+        self.checkBoxDefinitions.setChecked(False)
+        self.checkBoxAntonyms.setChecked(False)
+        self.checkBoxSynonyms.setChecked(False)
+        self.checkBoxTranslate.setChecked(False)
+        self.plainTextEditLog.setEnabled(False)
+        self.plainTextEditLog.clear()
+        self.plainTextInputWords.clear()
+        self.progressBar.hide()
+
+        for idx in range(1, 5):
+            self.tableWidgetResult.setColumnHidden(idx, False)
+
+        self.pushButtonFind.setEnabled(True)
 
     def find(self):
         skip_columns = 1
@@ -28,7 +39,7 @@ class MainWindowImplementation(Ui_MainWindow):
             self.checkBoxAntonyms.isChecked(),
             self.checkBoxDefinitions.isChecked(),
         ]
-
+        # TODO: add class validator
         # check if True in checkboxes
         if True not in options:
             QMessageBox.information(self.owner, "Внимание", "Пожалуйста, отметье галочками то, что хотите найти!")
@@ -38,14 +49,16 @@ class MainWindowImplementation(Ui_MainWindow):
         for idx, option in enumerate(options, skip_columns):
             self.tableWidgetResult.setColumnHidden(idx, not option)
 
-        return
-
+        # turn off actionReset and push button to prevent clicking and triggering during processing
         self.pushButtonFind.setEnabled(False)
+        self.actionReset.setEnabled(False)
+
+        self.plainTextEditLog.setEnabled(True)
+        self.progressBar.setVisible(True)
 
         word_list = ["word" + str(i) for i in range(10)]
         self.progressBar.setMaximum(len(word_list))
-        self.plainTextEditLog.setEnabled(True)
-        self.progressBar.setVisible(True)
+        self.progressBar.setValue(0)
 
         self.child_thread = TranslatorThread(word_list)
         self.child_thread.countChanged.connect(self.update)
@@ -59,14 +72,8 @@ class MainWindowImplementation(Ui_MainWindow):
     def show_results(self):
         QMessageBox.information(self.owner, "Готово!", "Поиск слов успешно завершен.")
         self.pushButtonFind.setEnabled(True)
-        self.clear()
-
-    def clear(self):
         self.progressBar.setVisible(False)
-        self.progressBar.setValue(0)
-
-        self.plainTextEditLog.clear()
-        self.plainTextEditLog.setEnabled(False)
+        self.actionReset.setEnabled(True)
 
 
 class TranslatorThread(QThread):
