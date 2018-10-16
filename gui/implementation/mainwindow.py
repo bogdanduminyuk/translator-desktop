@@ -13,10 +13,33 @@ class MainWindowImplementation(Ui_MainWindow):
     def setupUi(self, MainWindow):
         super(MainWindowImplementation, self).setupUi(MainWindow)
         self.pushButtonFind.clicked.connect(self.find)
+        self.actionReset.triggered.connect(self.reset)
         self.progressBar.setValue(0)
         self.progressBar.hide()
 
+    def reset(self):
+        QMessageBox.information(self.owner, "Сброс", "Действие при сбросе окна")
+
     def find(self):
+        skip_columns = 1
+        options = [
+            self.checkBoxTranslate.isChecked(),
+            self.checkBoxSynonyms.isChecked(),
+            self.checkBoxAntonyms.isChecked(),
+            self.checkBoxDefinitions.isChecked(),
+        ]
+
+        # check if True in checkboxes
+        if True not in options:
+            QMessageBox.information(self.owner, "Внимание", "Пожалуйста, отметье галочками то, что хотите найти!")
+            return
+
+        # hide columns with False in options
+        for idx, option in enumerate(options, skip_columns):
+            self.tableWidgetResult.setColumnHidden(idx, not option)
+
+        return
+
         self.pushButtonFind.setEnabled(False)
 
         word_list = ["word" + str(i) for i in range(10)]
@@ -34,11 +57,7 @@ class MainWindowImplementation(Ui_MainWindow):
         self.plainTextEditLog.insertPlainText("Ищется слово: " + word)
 
     def show_results(self):
-        msg = QMessageBox()
-        msg.setText("Закончено")
-        msg.setIcon(QMessageBox.Information)
-        msg.exec_()
-
+        QMessageBox.information(self.owner, "Готово!", "Поиск слов успешно завершен.")
         self.pushButtonFind.setEnabled(True)
         self.clear()
 
