@@ -32,7 +32,6 @@ class MainWindowImplementation(Ui_MainWindow):
         self.pushButtonFind.setEnabled(True)
 
     def find(self):
-        skip_columns = 1
         options = [
             self.checkBoxTranslate.isChecked(),
             self.checkBoxSynonyms.isChecked(),
@@ -61,48 +60,44 @@ class MainWindowImplementation(Ui_MainWindow):
         self.child_thread.finish.connect(self.show_results)
         self.child_thread.start()
 
-    def update(self, current, word):
-        self.progressBar.setValue(current)
+    def update(self, current_idx, word):
+        self.progressBar.setValue(current_idx)
         self.plainTextEditLog.insertPlainText("Ищется слово: " + word)
 
     def show_results(self, words):
         QMessageBox.information(self.owner, "Готово!", "Поиск слов успешно завершен.")
-        self.tableWidgetResult.clear()
         self.pushButtonFind.setEnabled(True)
         self.progressBar.setVisible(False)
         self.actionReset.setEnabled(True)
 
-        options = {
-            "word": True,
-            "translate": self.checkBoxTranslate.isChecked(),
-            "syn": self.checkBoxSynonyms.isChecked(),
-            "ant": self.checkBoxAntonyms.isChecked(),
-            "def": self.checkBoxDefinitions.isChecked()
-        }
-
-        headers = {
-            "word": "Слово",
-            "translate": "Перевод",
-            "syn": "Синонимы",
-            "ant": "Антонимы",
-            "def": "Определения"
-        }
-
-        cols_order = "word", "translate", "syn", "ant", "def"
         col_count = 0
         result_cols_keys = []
+        cols_order = "word", "translate", "syn", "ant", "def"
 
+        # keyword: option_enabled, header
+        options = {
+            "word": (True, "Слово"),
+            "translate": (self.checkBoxTranslate.isChecked(), "Перевод"),
+            "syn": (self.checkBoxSynonyms.isChecked(), "Синонимы"),
+            "ant": (self.checkBoxAntonyms.isChecked(), "Антонимы"),
+            "def": (self.checkBoxDefinitions.isChecked(), "Определения")
+        }
+
+        self.tableWidgetResult.clear()
+        self.tableWidgetResult.setRowCount(len(words))
         self.tableWidgetResult.setColumnCount(len(cols_order))
 
+        # setup headers and table
         for col_key in cols_order:
-            if options[col_key]:
-                self.tableWidgetResult.setHorizontalHeaderItem(col_count, QTableWidgetItem(headers[col_key]))
-                col_count += 1
+            enabled, header = options[col_key]
+            if enabled:
+                self.tableWidgetResult.setHorizontalHeaderItem(col_count, QTableWidgetItem(header))
                 result_cols_keys.append(col_key)
+                col_count += 1
 
-        self.tableWidgetResult.setRowCount(len(words))
         self.tableWidgetResult.setColumnCount(len(result_cols_keys))
 
+        # fill table
         for row_idx, word in enumerate(words):
             for col_idx, col_key in enumerate(result_cols_keys):
                 self.tableWidgetResult.setItem(row_idx, col_idx, QTableWidgetItem(word[col_key]))
