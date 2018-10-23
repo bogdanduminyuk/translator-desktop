@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem
 
 from core import translator
 from gui.base.mainwindow import Ui_MainWindow
@@ -45,10 +45,6 @@ class MainWindowImplementation(Ui_MainWindow):
             QMessageBox.information(self.owner, "Внимание", "Пожалуйста, отметье галочками то, что хотите найти!")
             return
 
-        # hide columns with False in options
-        for idx, option in enumerate(options, skip_columns):
-            self.tableWidgetResult.setColumnHidden(idx, not option)
-
         # turn off actionReset and push button to prevent clicking and triggering during processing
         self.pushButtonFind.setEnabled(False)
         self.actionReset.setEnabled(False)
@@ -69,24 +65,61 @@ class MainWindowImplementation(Ui_MainWindow):
         self.progressBar.setValue(current)
         self.plainTextEditLog.insertPlainText("Ищется слово: " + word)
 
-    def show_results(self):
+    def show_results(self, words):
         QMessageBox.information(self.owner, "Готово!", "Поиск слов успешно завершен.")
+        self.tableWidgetResult.clear()
         self.pushButtonFind.setEnabled(True)
         self.progressBar.setVisible(False)
         self.actionReset.setEnabled(True)
 
+        options = {
+            "word": True,
+            "translate": self.checkBoxTranslate.isChecked(),
+            "syn": self.checkBoxSynonyms.isChecked(),
+            "ant": self.checkBoxAntonyms.isChecked(),
+            "def": self.checkBoxDefinitions.isChecked()
+        }
+
+        headers = {
+            "word": "Слово",
+            "translate": "Перевод",
+            "syn": "Синонимы",
+            "ant": "Антонимы",
+            "def": "Определения"
+        }
+
+        cols_order = "word", "translate", "syn", "ant", "def"
+        col_count = 0
+        result_cols_keys = []
+
+        self.tableWidgetResult.setColumnCount(len(cols_order))
+
+        for col_key in cols_order:
+            if options[col_key]:
+                self.tableWidgetResult.setHorizontalHeaderItem(col_count, QTableWidgetItem(headers[col_key]))
+                col_count += 1
+                result_cols_keys.append(col_key)
+
+        self.tableWidgetResult.setRowCount(len(words))
+        self.tableWidgetResult.setColumnCount(len(result_cols_keys))
+
+        for row_idx, word in enumerate(words):
+            for col_idx, col_key in enumerate(result_cols_keys):
+                self.tableWidgetResult.setItem(row_idx, col_idx, QTableWidgetItem(word[col_key]))
+
 
 class TranslatorThread(QThread):
     countChanged = pyqtSignal(int, str)
-    finish = pyqtSignal()
+    finish = pyqtSignal(list)
 
     def __init__(self, word_list):
         super(TranslatorThread, self).__init__()
         self.word_list = word_list
 
     def run(self):
+        words = []
         for i, word in enumerate(self.word_list, 1):
-            translator.get(word)
+            words.append(translator.get(word))
             self.countChanged.emit(i, word)
 
-        self.finish.emit()
+        self.finish.emit(words)
