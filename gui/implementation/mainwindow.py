@@ -60,9 +60,14 @@ class MainWindowImplementation(Ui_MainWindow):
         self.child_thread.finish.connect(self.show_results)
         self.child_thread.start()
 
-    def update(self, current_idx, word):
+    def update(self, current_idx, word, error):
         self.progressBar.setValue(current_idx)
-        self.plainTextEditLog.insertPlainText("Ищется слово: " + word)
+
+        if error:
+            self.plainTextEditLog.appendHtml("{}... <font color = \"red\">Ошибка! {}</font>".format(word, error))
+            self.plainTextEditLog.insertPlainText("\n")
+        else:
+            self.plainTextEditLog.insertPlainText(word + "... OK!")
 
     def show_results(self, words):
         QMessageBox.information(self.owner, "Готово!", "Поиск слов успешно завершен.")
@@ -100,11 +105,11 @@ class MainWindowImplementation(Ui_MainWindow):
         # fill table
         for row_idx, word in enumerate(words):
             for col_idx, col_key in enumerate(result_cols_keys):
-                self.tableWidgetResult.setItem(row_idx, col_idx, QTableWidgetItem(word[col_key]))
+                self.tableWidgetResult.setItem(row_idx, col_idx, QTableWidgetItem(word.get(col_key, "")))
 
 
 class TranslatorThread(QThread):
-    countChanged = pyqtSignal(int, str)
+    countChanged = pyqtSignal(int, str, str)
     finish = pyqtSignal(list)
 
     def __init__(self, word_list):
@@ -114,7 +119,13 @@ class TranslatorThread(QThread):
     def run(self):
         words = []
         for i, word in enumerate(self.word_list, 1):
-            words.append(translator.get(word))
-            self.countChanged.emit(i, word)
+            try:
+                word_data = translator.get(word)
+                self.countChanged.emit(i, word, "")
+            except Exception as e:
+                word_data = {"word": word}
+                self.countChanged.emit(i, word, str(e))
+
+            words.append(word_data)
 
         self.finish.emit(words)
